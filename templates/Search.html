@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Data</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Search Data</h1>
+        <form action="/search" method="get">
+            <label for="hshd_num">Enter Hshd_num:</label>
+            <input type="text" id="hshd_num" name="hshd_num" required><br><br>
+            <input type="submit" value="Search">
+        </form>
+    </div>
+</body>
+</html>
