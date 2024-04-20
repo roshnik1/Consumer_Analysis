@@ -1,18 +1,13 @@
 from flask import Flask, render_template, request
 import os
 from dotenv import load_dotenv
+from database import get_db_connection
 import psycopg2
 
 # Load environment variables from .env file
 load_dotenv()
 
 app = Flask(__name__)
-
-# Database connection configuration
-DATABASE_HOST = "consumer-server.postgres.database.azure.com"
-DATABASE_NAME = "consumer-database"
-DATABASE_USER = "zlbzszmwuj"
-DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD")
 
 # Route for the login page
 @app.route('/')
@@ -26,7 +21,7 @@ def login_post():
     username = request.form['username']
     password = request.form['password']
     email = request.form['email']
-    
+
     # Process login data here (e.g., validate credentials)
 
     # Redirect to the search page
@@ -42,23 +37,25 @@ def search():
 def search_post():
     # Retrieve Hshd_num from the form
     hshd_num = request.form['hshd_num']
-    
-    # Connect to PostgreSQL database
-    conn = psycopg2.connect(
-        host=DATABASE_HOST,
-        database=DATABASE_NAME,
-        user=DATABASE_USER,
-        password=DATABASE_PASSWORD
-    )
 
-    # Retrieve data based on Hshd_num
-    cursor = conn.cursor()
-    cursor.execute(f"SELECT * FROM your_table WHERE Hshd_num = {hshd_num} ORDER BY Hshd_num, Basket_num, Date, Product_num, Department, Commodity")
-    search_results = cursor.fetchall()
-
-    # Close connection
-    cursor.close()
-    conn.close()
+    # Get a database connection
+    conn = get_db_connection()
+    if conn:
+        try:
+            # Retrieve data based on Hshd_num
+            cursor = conn.cursor()
+            cursor.execute(f"SELECT * FROM your_table WHERE Hshd_num = {hshd_num} ORDER BY Hshd_num, Basket_num, Date, Product_num, Department, Commodity")
+            search_results = cursor.fetchall()
+        except psycopg2.Error as e:
+            print(f"Error executing query: {e}")
+            search_results = []
+        finally:
+            # Close connection
+            cursor.close()
+            conn.close()
+    else:
+        print("Failed to establish a database connection.")
+        search_results = []
 
     # Render search results template with retrieved data
     return render_template('search.html', search_results=search_results)
