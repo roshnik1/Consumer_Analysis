@@ -8,9 +8,9 @@ load_dotenv()
 def get_db_connection():
     try:
         cnx = psycopg2.connect(
-            user="zlbzszmwuj",
+            user="zfimgpswjt",
             password=os.getenv("DATABASE_PASSWORD"),
-            host="consumer-server.postgres.database.azure.com",
+            host="consumer-analysis-server.postgres.database.azure.com",
             port=5432,
             database="postgres"
         )
